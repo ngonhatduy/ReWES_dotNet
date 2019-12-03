@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - ReWES</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+    @*/<script src="~/Content/js/main.js"></script>*@
+    <script src="~/Content/js/narbar.js"></script>
+    <script src="~/Content/js/map.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="icon" type="image/gif/png" href="/Content/logo/logoDuAn5.png">
+    <style>
+        body {
+            background-image: url("/Content/Pics/background3.jpg");
+            margin: 0;
+        }
+
+        .text-light {
+            color: white;
+            background-color: #3f3832;
+        }
+
+        .text-topic {
+            color: red;
+            background-color: #3f3832;
+        }
+    </style>
+
+    <!-- Bootstrap Style -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <!-- Custom Style-->
+    <link rel="stylesheet" type="text/css" href="/Content/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/Content/css/index.css">
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> -->
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+</head>
+<body>
+    <div class="navbar-fixed-top" id="myTopnav">
+        <a href="index.htm">Trang chủ</a>
+        <a href="information.htm">Thông tin</a>
+        <a href="about.htm">Giới thiệu</a>
+        <a href="contact.htm">Liên hệ</a>
+        <a href="history.htm">Quá trình phát triển</a>
+        <a href="device-images.htm">Một số hình ảnh</a>
+        <a href="password.htm"><span class="glyphicon glyphicon-log-in"></span> Bảng điều khiển</a>
+        <a href="javascript:void(0);" class="icon" onclick="narbar()">
+            <i class="fa fa-bars"></i>
+        </a>
+    </div>
+    <!-- Header -->
+    <div class="header">
+        <div class="languages">
+            <a href="index.htm"><b>Tiếng Việt</b></a>
+            <a href="English/index.htm">English</a>
+        </div>
+
+        <div class="logos">
+            <div class="pull-left">
+                <a href="index.htm">
+                    <img src="/Content/logo/logoDuAn.png" />
+                </a>
+            </div>
+            <div class="pull-right">
+                <a href="http://vlhn-hcmus.com" target="_blank">
+                    <img src="/Content/logo/logoKhoa.png">
+                </a>
+                <a href="https://www.hcmus.edu.vn" target="_blank">
+                    <img src="/Content/logo/logoTruong.png">
+                </a>
+            </div>
+        </div>
+
+        <div class="title">
+            <h1>DỰ ÁN QUAN TRẮC MÔI TRƯỜNG THEO THỜI GIAN THỰC</h1>
+            <h2>Bộ môn Vật lý Hạt nhân, Trường Đại học Khoa học Tự nhiên - ĐHQG TP.HCM</h2>
+        </div>
+    </div>
+    @RenderBody()
+    <div class="col-md-12">
+        <h3 style="text-align: center; color: red;">Bản đồ vị trí lắp đặt hệ thống:</h3>
+        <div id="map"></div>
+    </div>
+    <div class="col-md-12 footer">
+        <span>
+            Copyright@2017 ReWES project <br />
+            Designed and powered by: ReWES project
+        </span>
+
+    </div>
+    <script type="text/javascript"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-EsWrucJG3ppzgSuimyhzjKZho-1MTdA"></script>
+    <script type="text/javascript" src="/Content/js/map.js"></script>
+</body>
+</html>

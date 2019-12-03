@@ -1,0 +1,464 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <head>
+        <script src="https://code.highcharts.com/stock/highstock.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+        <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+<div class="col-md-12">
+    <div class="chart col-md-8">
+        <h3 style="text-align: center; color: red;">Đồ thị theo thời gian thực:</h3>
+        <div id="container" style="height: 350px; width: 90%; margin: 0 auto;"></div>
+        <div style="text-align: center">
+            <button id="btn_phong_xa" class="btn btn-primary-spacing active" href="#">Suất liều</button>
+            <button id="btn_nhiet_do" class="btn" href="#">Nhiệt độ</button>
+            <button id="btn_do_am" class="btn" href="#">Độ ẩm</button>
+            <button id="btn_khi_co2" class="btn" href="#">Khí CO</button>
+            <button id="btn_khi_ch4" class="btn" href="#">Khí CH4</button>
+            <button id="btn_sensor_3" class="btn" href="#">Sensor 3</button>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h3 style="text-align: center; color: red;">Bảng số liệu theo thời gian thực:</h3>
+        <table class="table table-sm table-bordered" style="margin: 0 auto; width: 90%; height: 300px;">
+            <tbody>
+                <tr>
+                    <td colspan="6" class="text-center text-topic">
+                        <span id="static_createDate">REALTIME</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="width: 65%" class="text-light">Suất liều (μSv/h)</td>
+                    <td class="text-light" span id="static_dose">0</span></td>
+                </tr>
+                <tr>
+                    <td class="text-light">Độ ẩm (%)</td>
+                    <td class="text-light" span id="static_humidity">0</span></td>
+                </tr>
+                <tr>
+                    <td class="text-light">Nhiệt độ (°C)</td>
+                    <td class="text-light" span id="static_temperature">0</span></td>
+                </tr>
+                <tr>
+                    <td class="text-light">CO (ppm)</td>
+                    <td class="text-light" span id="static_sensor1">0</span></td>
+                </tr>
+                <tr>
+                    <td class="text-light">CH4 (ppm)</td>
+                    <td class="text-light" span id="static_sensor2">0</span></td>
+                </tr>
+                <tr>
+                    <td class="text-light">Sensor 3 (ppm)</td>
+                    <td class="text-light" span id="static_sensor3">0</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>  
+    //$('#btn_phong_xa').click(function (){
+        Highcharts.stockChart('container', {
+            chart: {
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        //var link = "https://script.googleusercontent.com/macros/echo?user_content_key=boYk_ZproXC4zefT_NsJeeKkyYwPs2dn7fJHS1bQf9q40kjCzvkX1HJ9EitdplPadxesR9xQmRjYGU-1Y6QMGGIidA8Rj1-sm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnJ9GRkcRevgjTvo8Dc32iw_BLJPcPfRdVKhJT5HNzQuXEeN3QFwl2n0M6ZmO-h7C6bwVq0tbM60-uGhoxl1-0xbf9WzMOLFEoUrKxLVcJIaW&lib=MwxUjRcLr2qLlnVOLh12wSNkqcO1Ikdrk";
+                        setInterval(function () {
+                            $.ajax({
+                                url: 'http://nguyen-nulab.ddns.net:8001/web/updatert',
+                                //url: link,
+                                type: 'get',
+                                dataType: 'json',
+                                success: function (response) {
+                                    var x = (new Date()).getTime(), // current time
+                                        //y = Math.round(Math.random() * 100);
+                                        y = response.dose;
+                                    series.addPoint([x, y], true, true);
+                                }
+                            })
+                        }, 1000);
+                    }
+                }
+            },
+            time: {
+                useUTC: false
+            },
+
+            rangeSelector: {
+                buttons: [{
+                    count: 1,
+                    type: 'minute',
+                    text: '1M'
+                }, {
+                    count: 5,
+                    type: 'minute',
+                    text: '5M'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }],
+                inputEnabled: false,
+                selected: 0
+            },
+
+            title: {
+                text: 'Suất liều'
+            },
+
+            exporting: {
+                enabled: true
+            },
+
+            series: [{
+                name: 'Suất liều',
+                data: (function () {
+                    // generate an array of random data
+                    //$.ajax({
+                    //    url: 'http://nguyen-nulab.ddns.net:8001/web/updatert',
+                    //    //url: link,
+                    //    type: 'get',
+                    //    dataType: 'json',
+                    //    success: function (response) {
+                    //        var x = (new Date()).getTime(), // current time
+                    //            //y = Math.round(Math.random() * 100);
+                    //            y = response.dose;
+                    //        series.addPoint([x, y], true, true);
+                    //    }
+                    //})
+                    //var linkData = "https://envi-hcmus.herokuapp.com/mongodb";
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+                    for (i = -999; i <= 0; i += 1) {
+                        data.push([
+                            time + i * 1000,
+                            Math.round(Math.random() * 1)
+                        ]);
+                    }
+                    return data;
+
+                }())
+            }]
+        });
+    //});
+    $('#btn_nhiet_do').click(function (){
+        Highcharts.stockChart('container', {
+            chart: {
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        var link = "https://script.googleusercontent.com/macros/echo?user_content_key=boYk_ZproXC4zefT_NsJeeKkyYwPs2dn7fJHS1bQf9q40kjCzvkX1HJ9EitdplPadxesR9xQmRjYGU-1Y6QMGGIidA8Rj1-sm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnJ9GRkcRevgjTvo8Dc32iw_BLJPcPfRdVKhJT5HNzQuXEeN3QFwl2n0M6ZmO-h7C6bwVq0tbM60-uGhoxl1-0xbf9WzMOLFEoUrKxLVcJIaW&lib=MwxUjRcLr2qLlnVOLh12wSNkqcO1Ikdrk";
+                        setInterval(function () {
+                            $.ajax({
+                                //url: 'http://nguyen-nulab.ddns.net:8001/web/updatert',
+                                url: link,
+                                type: 'get',
+                                dataType: 'json',
+                                success: function (response) {
+                                    var x = (new Date()).getTime(), // current time
+                                        y = Math.round(Math.random() * 100);
+                                    //y = response.seconds;
+                                    series.addPoint([x, y], true, true);
+                                }
+                            })
+                        }, 1000);
+                    }
+                }
+            },
+
+            time: {
+                useUTC: false
+            },
+
+            rangeSelector: {
+                buttons: [{
+                    count: 1,
+                    type: 'minute',
+                    text: '1M'
+                }, {
+                    count: 5,
+                    type: 'minute',
+                    text: '5M'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }],
+                inputEnabled: false,
+                selected: 0
+            },
+
+            title: {
+                text: 'Nhiệt độ'
+            },
+
+            exporting: {
+                enabled: true
+            },
+
+            series: [{
+                name: 'Độ ẩm',
+                data: (function () {
+                    // generate an array of random data
+                    //var linkData = "http://nguyen-nulab.ddns.net:8001/web/updatert";
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+                    for (i = -999; i <= 0; i += 1) {
+                        data.push([
+                            time + i * 1000,
+                            Math.round(Math.random() * 100)
+                        ]);
+                    }
+                    return data;
+
+                }())
+            }]
+        });
+    });
+    $('#btn_do_am').click(function (){
+        Highcharts.stockChart('container', {
+            chart: {
+                events: {
+                    load: function () {
+                        // set up the updating of the chart each second
+                        var series = this.series[0];
+                        var link = "https://script.googleusercontent.com/macros/echo?user_content_key=boYk_ZproXC4zefT_NsJeeKkyYwPs2dn7fJHS1bQf9q40kjCzvkX1HJ9EitdplPadxesR9xQmRjYGU-1Y6QMGGIidA8Rj1-sm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnJ9GRkcRevgjTvo8Dc32iw_BLJPcPfRdVKhJT5HNzQuXEeN3QFwl2n0M6ZmO-h7C6bwVq0tbM60-uGhoxl1-0xbf9WzMOLFEoUrKxLVcJIaW&lib=MwxUjRcLr2qLlnVOLh12wSNkqcO1Ikdrk";
+                        setInterval(function () {
+                            $.ajax({
+                                //url: 'http://nguyen-nulab.ddns.net:8001/web/updatert',
+                                url: link,
+                                type: 'get',
+                                dataType: 'json',
+                                success: function (response) {
+                                    var x = (new Date()).getTime(), // current time
+                                        y = Math.round(Math.random() * 100);
+                                    //y = response.seconds;
+                                    series.addPoint([x, y], true, true);
+                                }
+                            })
+                        }, 1000);
+                    }
+                }
+            },
+
+            time: {
+                useUTC: false
+            },
+
+            rangeSelector: {
+                buttons: [{
+                    count: 1,
+                    type: 'minute',
+                    text: '1M'
+                }, {
+                    count: 5,
+                    type: 'minute',
+                    text: '5M'
+                }, {
+                    type: 'all',
+                    text: 'All'
+                }],
+                inputEnabled: false,
+                selected: 0
+            },
+
+            title: {
+                text: 'Độ ẩm'
+            },
+
+            exporting: {
+                enabled: true
+            },
+
+            series: [{
+                name: 'Độ ẩm',
+                data: (function () {
+                    // generate an array of random data
+                    //var linkData = "http://nguyen-nulab.ddns.net:8001/web/updatert";
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+                    $.ajax({
+                        url: 'https://envi-hcmus.herokuapp.com/mongodb',
+                        //url: link,
+                        type: 'get',
+                        dataType: 'jsonp',
+                        success: function (data) {
+                            console.log(data);
+                            //if (data.length != 0) {
+                            //    for (var i = data.length; i < data.length-100; i--) {
+                            //        //console.log(data[i]);
+                            //        //$('#regionSelector').val(data[i].REGION);
+                            //        //$('#regionSelector').append("<option>" + data[i].REGION + "</option>");
+                            //        var x = (new Date()).getTime(), // current time
+                            //            y = data[i].dose;
+                            //        console.log(y);
+                            //        series.addPoint([x, y], true, true);
+                            //    }
+                            //}
+                            //var x = (new Date()).getTime(), // current time
+                            //    y = Math.round(Math.random() * 100);
+                            //y = response.seconds;
+                            //series.addPoint([x, y], true, true);
+                        }
+                    })
+                    //for (i = -999; i <= 0; i += 1) {
+                    //    data.push([
+                    //        time + i * 1000,
+                    //        Math.round(Math.random() * 100)
+                    //    ]);
+                    //}
+                    return data;
+
+                }())
+            }]
+        });
+    });
+ //   $('#btn_phong_xa').click(function () {
+	//dps = [];
+	//active = 'phong_xa';
+	//drawChart('Dose Chart', 'dose', 'μSv/h');
+	//changeActive('btn_phong_xa');
+	//});
+	//$('#btn_nhiet_do').click(function () {
+	//	dps = [];
+	//	active = 'nhiet_do';
+	//	drawChart('Temperature Chart', 'temperature', '°C');
+	//	changeActive('btn_nhiet_do');
+	//});
+	//$('#btn_do_am').click(function () {
+	//	dps = [];
+	//	active = 'do_am';
+	//	drawChart('Humidity Chart', 'humidity', '%');
+	//	changeActive('btn_do_am');
+	//});
+	//$('#btn_khi_co2').click(function () {
+	//	dps = [];
+	//	active = 'khi_co2';
+	//	drawChart('CO Chart', 'co', 'ppm');
+	//	changeActive('btn_khi_co2');
+	//});
+	//$('#btn_khi_ch4').click(function () {
+	//	dps = [];
+	//	active = 'khi_ch4';
+	//	drawChart('CH4 Chart', 'ch', 'ppm');
+	//	changeActive('btn_khi_ch4');
+	//});
+	//$('#btn_sensor_3').click(function () {
+	//	dps = [];
+	//	active = 'khi_ch4';
+	//	drawChart('Sensor 3', 'sensor 3', 'ppm');
+	//	changeActive('btn_sensor_3');
+ //   });
+    function getData() {
+        return new Promise(function (resolve) {
+            $.get('http://nguyen-nulab.ddns.net:8001/web/updatert').then(function (response) {
+                resolve(response);
+            });
+        });
+    }
+    function changeActive(id) {
+	    $('#btn_phong_xa').removeClass('active');
+	    $('#btn_nhiet_do').removeClass('active');
+	    $('#btn_do_am').removeClass('active');
+	    $('#btn_khi_co2').removeClass('active');
+	    $('#btn_khi_ch4').removeClass('active');
+	    $('#btn_sensor_3').removeClass('active');
+	    $('#' + id + '').addClass('active');
+    }
+    function updateStatic(createDate, dose, temperature, humidity, sensor1, sensor2, sensor3) {
+		$('#static_createDate').text(new Date(createDate).toLocaleDateString('vi-VN') + ' ' + new Date(createDate).toLocaleTimeString('vi-VN'));
+		$('#static_dose').text(dose);
+		$('#static_temperature').text(temperature);
+		$('#static_humidity').text(humidity);
+		$('#static_sensor1').text(sensor1);
+		$('#static_sensor2').text(sensor2);
+		$('#static_sensor3').text(sensor3);
+		if (dose > 0.05)
+		{
+			document.getElementById("static_dose").style.color = "red";
+		}
+		else
+		{
+			document.getElementById("static_dose").style.color = "white";
+		}
+		if (temperature > 31)
+		{
+			document.getElementById("static_temperature").style.color = "red";
+		}
+		else
+		{
+			document.getElementById("static_temperature").style.color = "white";
+		}
+		if (humidity > 60)
+		{
+			document.getElementById("static_humidity").style.color = "red";
+		}
+		else
+		{
+			document.getElementById("static_humidity").style.color = "white";
+		}
+		if (sensor1 > 5)
+		{
+			document.getElementById("static_sensor1").style.color = "red";
+		}
+		else
+		{
+			document.getElementById("static_sensor1").style.color = "white";
+		}
+		if (sensor2 > 50)
+		{
+			document.getElementById("static_sensor2").style.color = "red";
+		}
+		else
+		{
+			document.getElementById("static_sensor2").style.color = "white";
+		}
+		if (sensor3 > 23.5)
+		{
+			document.getElementById("static_sensor3").style.color = "red";
+		}
+		else
+		{
+			document.getElementById("static_sensor3").style.color = "white";
+		}
+    }
+    var x = 0;
+	setInterval(function () {
+		getData().then(function (data) {
+			var response = JSON.parse(data);
+			x += 1;
+			var label = new Date().toLocaleTimeString('vi-VN');
+			updateStatic(new Date(), (response.dose).toFixed(4), (response.Te).toFixed(4), (response.Hu).toFixed(4), (response.sen1).toFixed(4), (response.sen2).toFixed(4), (response.sen3).toFixed(4));
+			//switch (active) {
+			//	// case 'phong_xa':
+			//		// updateChart(x, { label: label, value: response.dose});
+			//		// break;
+			//	case 'nhiet_do':
+			//		updateChart(x, { label: label, value: response.Te });
+			//		break;
+			//	case 'do_am':
+			//		updateChart(x, { label: label, value: response.Hu });
+			//		break;
+			//	case 'khi_co2':
+			//		updateChart(x, { label: label, value: response.sen1 });
+			//		break;
+			//	case 'khi_ch4':
+			//		updateChart(x, { label: label, value: response.sen2 });
+			//		break;
+			//	case 'sensor3':
+			//		updateChart(x, { label: label, value: response.sen3 });
+			//		break;
+			//}
+		})
+	}, 2e3);
+</script>
